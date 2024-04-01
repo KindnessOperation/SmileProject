@@ -4,3 +4,4 @@ venv
 token.json
 images
 *.pyc
+logs/*.log
