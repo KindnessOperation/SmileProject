@@ -32,7 +32,7 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     draw = ImageDraw.Draw(img)
 
     modifiedResponse = "\n".join(textwrap.wrap(response, width=70)) # Response is separated by newlines so it doesn't run off the screen
-    poppinsFont = ImageFont.truetype(r"C:\Users\austi\Downloads\code\py\SmileProject\fonts\Poppins-Regular.ttf", 25)
+    poppinsFont = ImageFont.truetype("./fonts/Poppins-Regular.ttf", 25)
     dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 55)
     DANCINGHEIGHT = 50 # The height of the font is 50px since the text doesn't change
     PADDING = 80 # Padding between the two parts of text
