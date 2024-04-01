@@ -17,7 +17,7 @@ def send_message(content: str, email: str) -> None:
     
     """
     acc = CONFIG['email']
-    SMTP_SERVER, SMTP_PORT = CONFIG['smtpSenderServer'], 587
+    SMTP_SERVER, SMTP_PORT = acc['smtpServer'], 587
     sender_email, sender_passowrd = acc['email'], acc['password']
 
     message = MIMEMultipart()
@@ -38,4 +38,4 @@ def send_message(content: str, email: str) -> None:
 
 
 if __name__ == "__main__":
-    send_message("testing", "4076860266@tmomail.net")
+    send_message("hi how is ur day", "4076860266@tmomail.net")

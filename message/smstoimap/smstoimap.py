@@ -66,7 +66,7 @@ if __name__ == "__main__": # Testing
     import json
     with open("./config.json") as f:
         acc = json.load(f)['email']
-        imap = otp_imap(acc['server'], acc['email'], acc['password'])
+        imap = otp_imap(acc['server'], acc['imapServer'], acc['password'])
         import time
         while True:
             print(list(imap.getMail("+14076860266@tmomail.net", 0)))
