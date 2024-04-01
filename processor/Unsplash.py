@@ -1,4 +1,8 @@
 import requests
+import logging
+
+
+logger = logging.getLogger("unsplash")
 
 class Unsplash:
     def __init__(self, accessToken: str) -> None:
@@ -14,6 +18,7 @@ class Unsplash:
         (str): A link to the image (1080px x 1080px)
 
         """
+        logger.info("Fetching background image from unsplash")
         params = {
             "client_id": self.accessToken,
             "orientation": "squarish",

@@ -1,6 +1,7 @@
 from instagrapi import Client
+import logging
 
-
+logger = logging.getLogger("instagram")
 
 class Instagram():
     def __init__(self, username: str, password: str) -> None:
@@ -15,7 +16,7 @@ class Instagram():
         (str)caption: A caption for the post; Defaults to None
         
         """
-
+        logger.info("Uploading post to instagram")
         self.cl.photo_upload(
             path=imagePath,
             caption=caption

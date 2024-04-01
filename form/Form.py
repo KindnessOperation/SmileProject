@@ -2,7 +2,9 @@ from apiclient import discovery
 from httplib2 import Http
 from oauth2client import client, file, tools
 from typing import Generator
+import logging
 
+logger = logging.getLogger("form")
 
 class Form:
     def __init__(self, formId: str) -> None:
@@ -20,6 +22,7 @@ class Form:
         store = file.Storage("./token.json")
         creds = store.get()
         if not creds or creds.invalid:
+            logger.warning("2OAuth token invalid - Manual intervention required")
             flow = client.flow_from_clientsecrets(r"./service_account.json", self.SCOPES)
             creds = tools.run_flow(flow, store)
         return creds

@@ -2,8 +2,10 @@ from PIL import Image, ImageFont, ImageDraw
 import requests
 import io
 import textwrap
+import logging
 
-
+logger = logging.getLogger("processor")
+logger.setLevel(logging.INFO)
 def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     """ Creates a post with the response to be uploaded to Instagram 
     
@@ -15,12 +17,16 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     (Image): The processed image
 
     """
+    logger.info("Creating post image")
+
     resp = requests.get(backgroundURI) # Get the image
     img = Image.open(io.BytesIO((resp.content)))
+    logger.debug("Set background image")
 
     # Make the image dimmer
     mask = Image.new("RGBA", img.size, (0, 0, 0, 160))
     img.paste(mask, (0, 0), mask)
+    logger.debug("Dimming background with mask")
 
     # Make draw object
     draw = ImageDraw.Draw(img)
@@ -42,10 +48,12 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
     draw.text((50, marginHeight), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont)
     draw.text((51, marginHeight), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont) # Makes it a little bolder since the bold font is not supported by PIL
+    logger.debug("Added dancing script font text")
+
 
     # Now add the response
     draw.text((75, marginHeight+PADDING), modifiedResponse, fill=(255, 255, 255), font=poppinsFont)
-
+    logger.debug("Added the response")
 
     return img
 
