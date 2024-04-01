@@ -31,9 +31,9 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     # Make draw object
     draw = ImageDraw.Draw(img)
 
-    modifiedResponse = "\n".join(textwrap.wrap(response, width=90)) # Response is separated by newlines so it doesn't run off the screen
-    poppinsFont = ImageFont.truetype(r"C:\Users\austi\Downloads\code\py\SmileProject\fonts\Poppins-Regular.ttf", 20)
-    dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 50)
+    modifiedResponse = "\n".join(textwrap.wrap(response, width=70)) # Response is separated by newlines so it doesn't run off the screen
+    poppinsFont = ImageFont.truetype(r"C:\Users\austi\Downloads\code\py\SmileProject\fonts\Poppins-Regular.ttf", 25)
+    dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 55)
     DANCINGHEIGHT = 50 # The height of the font is 50px since the text doesn't change
     PADDING = 80 # Padding between the two parts of text
 
@@ -61,4 +61,4 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
 if __name__ == "__main__":
     createPostImage("You are loved and I hope you had a very happy day indeed. Spring break was very fun and I hope you enjoyed it!",
-                    "https://images.unsplash.com/photo-1678791564760-725c8798f458?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTE5MzE1NDZ8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop")
+                    "https://images.unsplash.com/photo-1678791564760-725c8798f458?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTE5MzE1NDZ8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop").show()
