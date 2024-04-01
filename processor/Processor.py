@@ -4,13 +4,16 @@ import io
 import textwrap
 
 
-def createPostImage(response: str, backgroundURI: str):
+def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     """ Creates a post with the response to be uploaded to Instagram 
     
     Parameters:
     (str)response: The raw response from the google form
     (str)backgroundURI: The URI for the background photo
     
+    Returns:
+    (Image): The processed image
+
     """
     resp = requests.get(backgroundURI) # Get the image
     img = Image.open(io.BytesIO((resp.content)))
@@ -44,8 +47,7 @@ def createPostImage(response: str, backgroundURI: str):
     draw.text((75, marginHeight+PADDING), modifiedResponse, fill=(255, 255, 255), font=poppinsFont)
 
 
-    img.show()
-    img.save("./images/test.png")
+    return img
 
 
 
