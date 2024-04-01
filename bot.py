@@ -80,7 +80,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         if (reaction.emoji != "\u2705"): return
         
 
-        if (reaction.count != 2): # 2 other people other than the bot must react for the bot to post
+        if (reaction.count != 3): # 2 other people other than the bot must react for the bot to post
             logger.info("Reaction added to response: %s" % response)
             return
 
