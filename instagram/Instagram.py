@@ -16,8 +16,7 @@ class Instagram():
         
         """
 
-        media = self.cl.photo_upload(
+        self.cl.photo_upload(
             path=imagePath,
             caption=caption
-
         )
