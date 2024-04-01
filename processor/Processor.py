@@ -1,7 +1,7 @@
 from PIL import Image, ImageFont, ImageDraw
 import requests
 import io
-
+import textwrap
 
 
 def createPostImage(response: str, backgroundURI: str):
@@ -12,8 +12,8 @@ def createPostImage(response: str, backgroundURI: str):
     (str)backgroundURI: The URI for the background photo
     
     """
-    response = requests.get(backgroundURI) # Get the image
-    img = Image.open(io.BytesIO((response.content)))
+    resp = requests.get(backgroundURI) # Get the image
+    img = Image.open(io.BytesIO((resp.content)))
 
     # Make the image dimmer
     mask = Image.new("RGBA", img.size, (0, 0, 0, 160))
@@ -22,15 +22,30 @@ def createPostImage(response: str, backgroundURI: str):
     # Make draw object
     draw = ImageDraw.Draw(img)
 
-    # Add the Dancing Script text first
+    modifiedResponse = "\n".join(textwrap.wrap(response, width=90)) # Response is separated by newlines so it doesn't run off the screen
+    poppinsFont = ImageFont.truetype(r"C:\Users\austi\Downloads\code\py\SmileProject\fonts\Poppins-Regular.ttf", 20)
     dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 50)
+    DANCINGHEIGHT = 50 # The height of the font is 50px since the text doesn't change
+    PADDING = 80 # Padding between the two parts of text
 
-    draw.text((20, 20), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont)
-    draw.text((21, 20), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont) # Makes it a little bolder since the bold font is not supported by PIL
+    left, top, right, bottom = poppinsFont.getbbox(modifiedResponse)
+    # length = right - left
+    poppinsHeight = bottom - top # Height of the response in px
 
-    
+    marginHeight = (1080 - (poppinsHeight + PADDING + 50)) / 2 # [ Total height of image (1080) - PADDING (80) - content height of both pieces of text ] /2
+
+
+    # Add the Dancing Script text first
+
+    draw.text((50, marginHeight), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont)
+    draw.text((51, marginHeight), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont) # Makes it a little bolder since the bold font is not supported by PIL
+
+    # Now add the response
+    draw.text((75, marginHeight+PADDING), modifiedResponse, fill=(255, 255, 255), font=poppinsFont)
+
 
     img.show()
+    img.save("./images/test.png")
 
 
 
