@@ -25,6 +25,7 @@ class Unsplash:
         js = response.json()
         return js[0]['urls']['raw'] + "?w=1080&h=1080&fit=crop" # Parameters to make it fit in an Instagram post
 
+
 if __name__ == "__main__":
     import json
     with open("./config.json") as f:
