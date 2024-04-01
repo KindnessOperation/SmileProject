@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 import requests
 import io
 
@@ -12,15 +12,25 @@ def createPostImage(response: str, backgroundURI: str):
     (str)backgroundURI: The URI for the background photo
     
     """
-    while True:
-        response = requests.get(backgroundURI) # Get the image
-        img = Image.open(io.BytesIO((response.content)))
+    response = requests.get(backgroundURI) # Get the image
+    img = Image.open(io.BytesIO((response.content)))
 
-        # Make the image dimmer
-        mask = Image.new("RGBA", img.size, (0, 0, 0, int(input())))
-        img.paste(mask, (0, 0), mask)
+    # Make the image dimmer
+    mask = Image.new("RGBA", img.size, (0, 0, 0, 160))
+    img.paste(mask, (0, 0), mask)
 
-        img.show()
+    # Make draw object
+    draw = ImageDraw.Draw(img)
+
+    # Add the Dancing Script text first
+    dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 50)
+
+    draw.text((20, 20), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont)
+    draw.text((21, 20), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont) # Makes it a little bolder since the bold font is not supported by PIL
+
+    
+
+    img.show()
 
 
 
