@@ -6,7 +6,7 @@ from instagram import Instagram
 import logging
 import aiohttp
 import aiofiles
-
+import asyncio
 
 CONFIG = None
 with open("./config.json", "r") as f:
@@ -22,6 +22,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 bot.POSTPATH = "./images/post.png"
 bot.VERIFYPATH = "./images/verify.png" # Path to store the processed image
 bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/1224211649288867870/IMG_9125.jpg?ex=661caaf1&is=660a35f1&hm=d1e2fa5fff66b33b0327bb81e1b973134f3a9935f2bd60776433484c72b5a51d&"
+bot.ig = None
 
 @bot.event
 async def on_ready() -> None:
@@ -29,6 +30,8 @@ async def on_ready() -> None:
     print(f"{bot.user.name} is ready!")
     bot.verifyChannel = bot.get_channel(CONFIG['channels']['verify'])
     bot.successChannel = bot.get_channel(CONFIG['channels']['success'])
+    
+    bot.ig = Instagram(CONFIG['instagram']['username'], CONFIG['instagram']['password'])
 
 @bot.event
 async def on_message(message: discord.Message) -> None:
@@ -104,8 +107,8 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
                             await f.write(data)
 
             # Upload to instagram
-            ig = Instagram(CONFIG['instagram']['username'], CONFIG['instagram']['password'])
-            ig.uploadPost(bot.POSTPATH)
+            loop = asyncio.get_event_loop()
+            loop.run_in_executor(None, bot.ig.uploadPost, bot.POSTPATH)
 
 
             # Post in success
