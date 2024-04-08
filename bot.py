@@ -78,14 +78,13 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
     # If the message has 2 other reactions; The response is sent to the verify channel
     if (channelId == CONFIG['channels']['responses']): # Responses Channel
-
+        
         # If the message isn't a check, then return
-        if (reaction.emoji != "\u2705"): return
+        if (reaction.emoji == "\u2705" and reaction.count == 3): pass
+        elif (reaction.emoji == "\u2764" and reaction.count == 2): pass
+        else: return
         
 
-        if (reaction.count != 3): # 2 other people other than the bot must react for the bot to post
-            logger.info("Reaction added to response: %s" % response)
-            return
 
         logger.info("Reaction minimum met - Moving to verified step: %s" % (response))
         await reaction.message.delete()
