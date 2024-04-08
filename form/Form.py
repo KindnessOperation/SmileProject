@@ -47,8 +47,9 @@ class Form:
         result = service.forms().responses().list(formId=self.formId).execute()
         responses = result['responses']
         for response in responses:
-            yield (response['responseId'], response['answers']['06b405aa']['textAnswers']['answers'][0]['value'])
-
+            answerKey = list(response['answers'].keys())[0]
+            yield (response['responseId'], response['answers'][answerKey]['textAnswers']['answers'][0]['value'])
+            
     def getResponse_pks(self) -> list:
         """ Returns a list of response ids used for initialization
         
