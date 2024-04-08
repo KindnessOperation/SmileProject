@@ -73,13 +73,14 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     if ((not reaction.message.webhook_id and not reaction.message.author.bot) or user.bot):
         return
     
+    logger.info("Reaction %s added" % reaction.emoji)
+    
     channelId = reaction.message.channel.id
     response = reaction.message.embeds[0].description # The description of the embed is the response
 
     # If the message has 2 other reactions; The response is sent to the verify channel
     if (channelId == CONFIG['channels']['responses']): # Responses Channel
 
-        # If the message isn't a check, then return
         if (reaction.emoji == "\u2705" and reaction.count == 3): pass
         elif (reaction.emoji == "\u2764" and reaction.count == 1): pass
         else: return
