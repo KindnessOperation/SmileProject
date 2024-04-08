@@ -82,7 +82,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     if (channelId == CONFIG['channels']['responses']): # Responses Channel
 
         if (reaction.emoji == "\u2705" and reaction.count == 3): pass
-        elif (reaction.emoji == "\u2764" and reaction.count == 1): pass
+        elif (reaction.emoji == "\u2764\ufe0f" and reaction.count == 1): pass
         else: return
         
 
