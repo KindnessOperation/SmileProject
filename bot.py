@@ -22,7 +22,7 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 bot.POSTPATH = "./images/post.png"
 bot.VERIFYPATH = "./images/verify.png" # Path to store the processed image
 bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/1224211649288867870/IMG_9125.jpg?ex=661caaf1&is=660a35f1&hm=d1e2fa5fff66b33b0327bb81e1b973134f3a9935f2bd60776433484c72b5a51d&"
-bot.ig = None
+bot.ig = {}
 
 @bot.event
 async def on_ready() -> None:
@@ -31,7 +31,6 @@ async def on_ready() -> None:
     bot.verifyChannel = bot.get_channel(CONFIG['channels']['verify'])
     bot.successChannel = bot.get_channel(CONFIG['channels']['success'])
     
-    bot.ig = Instagram(CONFIG['instagram']['username'], CONFIG['instagram']['password'])
 
 @bot.event
 async def on_message(message: discord.Message) -> None:
@@ -42,9 +41,21 @@ async def on_message(message: discord.Message) -> None:
 
     await bot.process_commands(message)
 
+async def getInstagram(school: str) -> Instagram:
+    if (school in bot.ig):
+        logger.info("Returning cached IG login for school: %s" % school)
+        return bot.ig[school]
+
+    # Login to account and add to bot.ig
+    logger.info("Logging into IG for school: %s" % school)
+    creds = CONFIG['accounts'][school]['instagram']
+    igAcc = Instagram(creds['username'], creds['password'])
+    bot.ig[school] = igAcc
+    return igAcc
+    
 
 
-async def sendVerifyMessage(response: str) -> None:
+async def sendVerifyMessage(response: str, school: str) -> None:
     """ Sends the embed with image to be verified """
     unsplash = processor.Unsplash(CONFIG['unsplashAccessToken'])
     imgURI = unsplash.getRandomImage(query="flower")
@@ -59,7 +70,10 @@ async def sendVerifyMessage(response: str) -> None:
     file = discord.File(fp=bot.VERIFYPATH, filename="verify.png")
     embed.set_image(url="attachment://verify.png")
     embed.set_author(
-        name="Smile Project", 
+        name=school
+    )
+    embed.set_footer(
+        text="Smile Project",
         icon_url=bot.FLOWERURI
     )
 
@@ -77,6 +91,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     
     channelId = reaction.message.channel.id
     response = reaction.message.embeds[0].description # The description of the embed is the response
+    school = reaction.message.embeds[0].author.name
 
     # If the message has 2 other reactions; The response is sent to the verify channel
     if (channelId == CONFIG['channels']['responses']): # Responses Channel
@@ -89,7 +104,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
         logger.info("Reaction minimum met - Moving to verified step: %s" % (response))
         await reaction.message.delete()
-        await sendVerifyMessage(response)
+        await sendVerifyMessage(response, school)
     
     # After the message has been approved by responses, we move on to approve the background image in #verify
     elif (channelId == CONFIG['channels']['verify']): # Verify Channel
@@ -108,7 +123,8 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
             # Upload to instagram
             loop = asyncio.get_event_loop()
-            loop.run_in_executor(None, bot.ig.uploadPost, bot.POSTPATH)
+            ig = await getInstagram(school)
+            loop.run_in_executor(None, ig.uploadPost, bot.POSTPATH)
 
 
             # Post in success
@@ -118,7 +134,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         elif (reaction.emoji == "\u274C"): # If it's an X, reroll
             logger.info("Rerolling post - %s" % response)
             await reaction.message.delete() # Delete old msg
-            await sendVerifyMessage(response)
+            await sendVerifyMessage(response, school)
 
 
 
