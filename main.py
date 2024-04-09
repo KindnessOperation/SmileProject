@@ -48,7 +48,7 @@ class SmileProject:
     
     def startLoop(self) -> None:
         while True:
-            sp.loop()
+            self.loop()
             time.sleep(5)
 
 
@@ -56,17 +56,16 @@ class SmileProject:
 if __name__ == "__main__":
     threads: list[threading.Thread] = []
 
-    for school, data in CONFIG['accounts'].items(): 
+    for school, data in CONFIG['accounts'].items():
         sp = SmileProject(
             data['formId'], 
             CONFIG['webhook'], # Global
             school
         )
-        thread = threading.Thread(None, sp.startLoop)
+        thread = threading.Thread(None, sp.startLoop, daemon=True)
         thread.start()
         threads.append(thread)
 
-    for thread in threads: # Blocks the program to allow threads to work
-        thread.join()
+    while True: time.sleep(100) # Sleep forever
 
 
