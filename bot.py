@@ -96,8 +96,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     # If the message has 2 other reactions; The response is sent to the verify channel
     if (channelId == CONFIG['channels']['responses']): # Responses Channel
 
-        if (reaction.emoji == "\u2705" and reaction.count == 3): pass
-        elif (reaction.emoji == "\u2764\ufe0f" and reaction.count == 1): pass
+        if (reaction.emoji == "\u2705" and reaction.count == 2): pass
         else: return
         
 
