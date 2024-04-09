@@ -8,9 +8,9 @@ logger = logging.getLogger("form")
 
 class Form:
     def __init__(self, formId: str) -> None:
+        self.formId = formId
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly" # Only scope needed
         self.DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
-        self.formId = formId
 
     def _authenticate(self) -> client.OAuth2Credentials:
         """ Authenticates with the Google Cloud API with 2auth
@@ -29,7 +29,7 @@ class Form:
 
     def getResponses(self) -> Generator[tuple[str, str], None, None]:
         """ Gets all form results as strings 
-        
+
         Returns:
         (Generator[tuple[str, str], None, None]): Yields each response as a tuple with the responseId and its value
         
@@ -52,7 +52,7 @@ class Form:
             
     def getResponse_pks(self) -> list:
         """ Returns a list of response ids used for initialization
-        
+
         Returns:
         (list): List of response ids
         
