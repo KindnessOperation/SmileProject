@@ -6,7 +6,7 @@ Smile Project is a project that posts kind messages made by the community on an 
 
 ## How it works
 1. Google Form responses are sent in a discord channel
-2. The owner can approve responses for being posted
+2. The owner can approve responses to be posted
 3. A various selection of background images can be selected for the post (Cycle images by selecting the X)
 4. If approved, the bot will post the image on Instagram
 
@@ -14,6 +14,8 @@ Smile Project is a project that posts kind messages made by the community on an 
 To install the dependencies required for Smile Project use:
 
 ```pip install -r requirements.txt```
+
+Create a file called ```token.json``` with an empty json dictionary inside; This is where credentials will be stored.
 
 ## Configuration
 The bot can manage multiple accounts and forms at once. ```config.json``` contains the configuration files required to run the program.
