@@ -159,7 +159,7 @@ async def verify(ctx: commands.Context) -> None:
     school = embed.author.name
     timestamp = embed.timestamp
 
-    dataset_writer.CSVWriter("./data.csv").writeData(timestamp, school, response, kind=True)
+    dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, True, school)
 
 
     logger.info("Manually verified message @ %s - %s" % (school, response))
