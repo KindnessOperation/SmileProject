@@ -148,7 +148,8 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
 @bot.command()
 async def verify(ctx: commands.Context) -> None:
-    referenced_message = ctx.message.reference
+    referenced_message_id = ctx.message.reference.message_id
+    referenced_message = await ctx.fetch_message(referenced_message_id)
     if (not referenced_message):
         await ctx.send(embed=discord.Embed(title="No message referenced", color=discord.Color.red()))
         return
