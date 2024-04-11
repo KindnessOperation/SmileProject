@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger("processor")
 logger.setLevel(logging.INFO)
+
 def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     """ Creates a post with the response to be uploaded to Instagram 
     
@@ -14,7 +15,7 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     (str)backgroundURI: The URI for the background photo
     
     Returns:
-    (Image): The processed image
+    (Image.Image): The processed image
 
     """
     logger.info("Creating post image")
@@ -37,10 +38,11 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     PADDING = 80 # Padding between the two parts of text
 
     left, top, right, bottom = poppinsFont.getbbox(modifiedResponse)
+    
     # length = right - left
     poppinsHeight = bottom - top # Height of the response in px
 
-    marginHeight = (1080 - (poppinsHeight + PADDING + 50)) / 2 # [ Total height of image (1080) - PADDING (80) - content height of both pieces of text ] /2
+    marginHeight = (1080 - (poppinsHeight + PADDING + DANCINGHEIGHT)) / 2 # [ Total height of image (1080) - PADDING (80) - content height of both pieces of text ] /2
 
 
     # Add the Dancing Script text first
@@ -59,5 +61,5 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
 
 if __name__ == "__main__":
-    createPostImage("""To the freshman tru\nmpets (and lovely Cody Tullos, Payton Garver, Kaiden Sullivan, and Seb Matos)\nYou guys have come so far just this year alone, I love watching you all grow and succeed as young musicians. Some of you came in not even knowing how to hold an instrument, and now you're carrying weight and keeping up with everyone else. I am so proud of all of you and I can not wait to see how you improve next year.\nFrom one of your section leaders""",
-                    "https://images.unsplash.com/photo-1678791564760-725c8798f458?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTE5MzE1NDZ8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop").show()
+    createPostImage("""A"""*50,
+                    "https://images.unsplash.com/photo-1615839377917-bc950e77a6d1?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTI4NTQ0NDd8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop")
