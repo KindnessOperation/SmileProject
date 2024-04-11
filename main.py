@@ -4,7 +4,7 @@ import time
 import discord
 import logging
 import threading
-
+import datetime
 
 basic_config = logging.basicConfig(filename="logs/main.log", 
     format="%(name)s-%(asctime)s-%(levelname)s:%(message)s", 
@@ -42,6 +42,7 @@ class SmileProject:
                     text="Smile Project",
                     icon_url=self.FLOWERURI
                 )
+                embed.timestamp = datetime.datetime.now(datetime.UTC)
                 
                 self.webhook.send(embed=embed, username="Smile Project", avatar_url=self.FLOWERURI)
                 logger.info("Webhook sent")
