@@ -153,7 +153,7 @@ async def verify(ctx: commands.Context) -> None:
         await ctx.send(embed=discord.Embed(title="No message referenced", color=discord.Color.red()))
         return
 
-    embed = ctx.message.embeds[0]
+    embed = referenced_message.embeds[0]
     response = embed.description # The description of the embed is the response
     school = embed.author.name
     timestamp = embed.timestamp
