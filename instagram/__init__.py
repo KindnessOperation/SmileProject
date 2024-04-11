@@ -1,1 +1,1 @@
-from .Instagram import *
+cached_instagram_accs = {}
