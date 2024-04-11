@@ -163,6 +163,7 @@ async def verify(ctx: commands.Context) -> None:
 
 
     logger.info("Manually verified message @ %s - %s" % (school, response))
+    await referenced_message.delete()
     await sendVerifyMessage(response, school)
 
 bot.run(CONFIG['discordToken'])
