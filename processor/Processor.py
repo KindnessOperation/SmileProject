@@ -37,8 +37,8 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     DANCINGHEIGHT = 50 # The height of the font is 50px since the text doesn't change
     PADDING = 80 # Padding between the two parts of text
 
-    left, top, right, bottom = poppinsFont.getbbox(modifiedResponse)
-    
+    left, top, right, bottom = draw.multiline_textbbox((0, 0), modifiedResponse, font=poppinsFont)
+
     # length = right - left
     poppinsHeight = bottom - top # Height of the response in px
 
@@ -61,5 +61,5 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
 
 if __name__ == "__main__":
-    createPostImage("""A"""*50,
-                    "https://images.unsplash.com/photo-1615839377917-bc950e77a6d1?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTI4NTQ0NDd8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop")
+    createPostImage("""A"""*400,
+                    "https://images.unsplash.com/photo-1615839377917-bc950e77a6d1?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTI4NTQ0NDd8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop").show()
