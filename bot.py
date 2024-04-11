@@ -106,6 +106,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         if (reaction.emoji == "\u2705" and reaction.count == 2): pass
         elif (reaction.emoji == "\u274C" and reaction.count == 2): # X
             dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, False, school)
+            await reaction.message.delete()
             return
         else: return
 
@@ -164,6 +165,7 @@ async def verify(ctx: commands.Context) -> None:
 
     logger.info("Manually verified message @ %s - %s" % (school, response))
     await referenced_message.delete()
+    await ctx.message.delete()
     await sendVerifyMessage(response, school)
 
 bot.run(CONFIG['discordToken'])
