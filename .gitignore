@@ -5,3 +5,5 @@ token.json
 images
 *.pyc
 logs/*.log
+__pycache__
+data.csv
