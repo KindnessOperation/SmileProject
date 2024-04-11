@@ -2,11 +2,13 @@ import discord
 from discord.ext import commands
 import json
 import processor
-from instagram import Instagram
+from instagram.Instagram import getInstagram
 import logging
 import aiohttp
 import aiofiles
 import asyncio
+import dataset_writer
+
 
 CONFIG = None
 with open("./config.json", "r") as f:
@@ -22,7 +24,6 @@ bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 bot.POSTPATH = "./images/post.png"
 bot.VERIFYPATH = "./images/verify.png" # Path to store the processed image
 bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/1224211649288867870/IMG_9125.jpg?ex=661caaf1&is=660a35f1&hm=d1e2fa5fff66b33b0327bb81e1b973134f3a9935f2bd60776433484c72b5a51d&"
-bot.ig = {}
 
 @bot.event
 async def on_ready() -> None:
@@ -37,26 +38,27 @@ async def on_message(message: discord.Message) -> None:
 
     if (message.webhook_id):
         await message.add_reaction("\u2705") # U+2705 is a white check mark
+        await message.add_reaction("\u274C") # X
         logger.info("New Response - %s" % (message.embeds[0].description))
 
     await bot.process_commands(message)
 
-async def getInstagram(school: str) -> Instagram:
-    if (school in bot.ig):
-        logger.info("Returning cached IG login for school: %s" % school)
-        return bot.ig[school]
-
-    # Login to account and add to bot.ig
-    logger.info("Logging into IG for school: %s" % school)
-    creds = CONFIG['accounts'][school]['instagram']
-    igAcc = Instagram(creds['username'], creds['password'])
-    bot.ig[school] = igAcc
-    return igAcc
+async def sendVerifyMessage(response: str, school: str, originalMsg: discord.Message=None) -> None:
+    """ Sends the embed with image to be verified 
     
+    Parameter:
+    (str)response: The response from the google form
+    (str)school: The name of the school to be included in the embed
+    (discord.Message)originalMsg: Optional argument; If provided, edits the original message instead of sending a new message; Defaults to None
+
+    """
+    if (originalMsg): # Remove reaction before generating image if it is going to be edited
+        for reaction in originalMsg.reactions:
+            async for user in reaction.users():
+                if (user != bot.user): # If the bot didn't react
+                    await originalMsg.remove_reaction(reaction, user) # Remove their reaction
 
 
-async def sendVerifyMessage(response: str, school: str) -> None:
-    """ Sends the embed with image to be verified """
     unsplash = processor.Unsplash(CONFIG['unsplashAccessToken'])
     imgURI = unsplash.getRandomImage(query="flower")
     img = processor.createPostImage(response, imgURI)
@@ -77,9 +79,12 @@ async def sendVerifyMessage(response: str, school: str) -> None:
         icon_url=bot.FLOWERURI
     )
 
-    msg = await bot.verifyChannel.send(file=file, embed=embed)
-    await msg.add_reaction("\u2705") # Check
-    await msg.add_reaction("\u274C") # X
+    if (not originalMsg): # Send new message
+        msg = await bot.verifyChannel.send(file=file, embed=embed)
+        await msg.add_reaction("\u2705") # Check
+        await msg.add_reaction("\u274C") # X
+    else: # Edit old message
+        await originalMsg.edit(attachments=[file], embed=embed)
 
 @bot.event
 async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> None:
@@ -90,16 +95,21 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     logger.info("Reaction %s added" % reaction.emoji)
     
     channelId = reaction.message.channel.id
-    response = reaction.message.embeds[0].description # The description of the embed is the response
-    school = reaction.message.embeds[0].author.name
+    embed = reaction.message.embeds[0]
+    response = embed.description # The description of the embed is the response
+    school = embed.author.name
+    timestamp = embed.timestamp
 
     # If the message has 2 other reactions; The response is sent to the verify channel
     if (channelId == CONFIG['channels']['responses']): # Responses Channel
 
         if (reaction.emoji == "\u2705" and reaction.count == 2): pass
+        elif (reaction.emoji == "\u274C" and reaction.count == 2): # X
+            dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, kind=False)
+            return
         else: return
-        
 
+        dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, kind=True)
 
         logger.info("Reaction minimum met - Moving to verified step: %s" % (response))
         await reaction.message.delete()
@@ -121,8 +131,8 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
                             await f.write(data)
 
             # Upload to instagram
+            ig = getInstagram(school) # While this code is blocking, its only on the initialization of the account and shouldn't have much effect on the performance long-term
             loop = asyncio.get_event_loop()
-            ig = await getInstagram(school)
             loop.run_in_executor(None, ig.uploadPost, bot.POSTPATH)
 
 
@@ -132,9 +142,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         
         elif (reaction.emoji == "\u274C"): # If it's an X, reroll
             logger.info("Rerolling post - %s" % response)
-            await reaction.message.delete() # Delete old msg
-            await sendVerifyMessage(response, school)
-
-
+            # await reaction.message.delete() # Delete old msg
+            await sendVerifyMessage(response, school, reaction.message)
 
 bot.run(CONFIG['discordToken'])
