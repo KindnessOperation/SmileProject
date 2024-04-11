@@ -131,7 +131,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
                             await f.write(data)
 
             # Upload to instagram
-            ig = getInstagram(school) # While this code is blocking, its only on the initialization of the account and shouldn't have much effect on the performance long-term
+            ig = getInstagram(school, CONFIG['accounts']) # While this code is blocking, its only on the initialization of the account and shouldn't have much effect on the performance long-term
             loop = asyncio.get_event_loop()
             loop.run_in_executor(None, ig.uploadPost, bot.POSTPATH)
 
