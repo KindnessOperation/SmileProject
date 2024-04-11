@@ -105,11 +105,11 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
         if (reaction.emoji == "\u2705" and reaction.count == 2): pass
         elif (reaction.emoji == "\u274C" and reaction.count == 2): # X
-            dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, kind=False)
+            dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, False, school)
             return
         else: return
 
-        dataset_writer.CSVWriter("./data.csv").writeData(timestamp, school, response, kind=True)
+        dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, True, school)
 
         logger.info("Reaction minimum met - Moving to verified step: %s" % (response))
         await reaction.message.delete()
