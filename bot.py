@@ -145,4 +145,23 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
             # await reaction.message.delete() # Delete old msg
             await sendVerifyMessage(response, school, reaction.message)
 
+
+@bot.command()
+async def verify(ctx: commands.Context) -> None:
+    referenced_message = await ctx.message.reference
+    if (not referenced_message):
+        await ctx.send(embed=discord.Embed(title="No message referenced", color=discord.Color.red()))
+        return
+
+    embed = ctx.message.embeds[0]
+    response = embed.description # The description of the embed is the response
+    school = embed.author.name
+    timestamp = embed.timestamp
+
+    dataset_writer.CSVWriter("./data.csv").writeData(timestamp, school, response, kind=True)
+
+
+    logger.info("Manually verified message @ %s - %s" % (school, response))
+    await sendVerifyMessage(response, school)
+
 bot.run(CONFIG['discordToken'])
