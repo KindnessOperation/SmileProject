@@ -3,7 +3,7 @@ import datetime
 
 class CSVWriter():
     def __init__(self, filename: str):
-        self.file = open(filename, "w", newline='')
+        self.file = open(filename, "a", newline='', encoding='utf-8')
         self.writer = csv.writer(self.file, dialect="excel")
     
     def __del__(self) -> None:
@@ -23,4 +23,4 @@ class CSVWriter():
     
 
 if __name__ == "__main__":
-    CSVWriter("data.csv").writeData(1)
+    CSVWriter("data.csv").writeData("!!!!!", "22😀", 1)
