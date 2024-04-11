@@ -109,7 +109,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
             return
         else: return
 
-        dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, kind=True)
+        dataset_writer.CSVWriter("./data.csv").writeData(timestamp, school, response, kind=True)
 
         logger.info("Reaction minimum met - Moving to verified step: %s" % (response))
         await reaction.message.delete()
