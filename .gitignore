@@ -7,3 +7,4 @@ images
 logs/*.log
 __pycache__
 data.csv
+images/out/*
