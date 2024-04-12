@@ -2,9 +2,9 @@ config.json
 service_account.json
 venv
 token.json
-images
 *.pyc
 logs/*.log
 __pycache__
 data.csv
 images/out/*
+images/*.png
