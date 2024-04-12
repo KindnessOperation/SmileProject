@@ -168,4 +168,21 @@ async def verify(ctx: commands.Context) -> None:
     await ctx.message.delete()
     await sendVerifyMessage(response, school)
 
+@bot.command()
+async def getImages(ctx: commands.Context, limit: int=None) -> None:
+    msg = await ctx.send(embed=discord.Embed(title="Saving Images", color=discord.Color.blue()))
+    count = 0
+    async for message in ctx.channel.history(limit=limit+2 if limit else None):
+        count += 1
+        print(count)
+        attachments = message.attachments
+        if (attachments):
+            attachment = attachments[0]
+            await attachment.save("./images/out/%s.png" % (attachment.id))
+        else:
+            print(message.content)
+    await msg.edit(embed=discord.Embed(title="Images saved...", color=discord.Color.green()))
+
+
+
 bot.run(CONFIG['discordToken'])
