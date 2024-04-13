@@ -45,6 +45,8 @@ The bot can manage multiple accounts and forms at once. ```config.json``` contai
         - responses: The channel ID where responses are sent. Also the channel with the webhook URL
         - verify: The channel ID where background images are verified
         - success: The channel ID where posts that have been uploaded are recorded
+- ### imageQuery
+    - The topic of the background images retrieved from Unsplash. Ex: nature, flowers
 - ### accounts
     - A dictionary of various accounts that the bot manages
         - The key is the nickname of the account
