@@ -3,9 +3,45 @@ import requests
 import io
 import textwrap
 import logging
+import re
 
 logger = logging.getLogger("processor")
 logger.setLevel(logging.INFO)
+
+def getEmojiMask(font: ImageFont, emoji: str, size: tuple[int, int]) -> Image:
+    """ Makes an image with an emoji using AppleColorEmoji.ttf, this can then be pasted onto the image to show emojis
+    
+    Parameter:
+    (ImageFont)font: The font with the emojis (AppleColorEmoji.ttf); Passed in so font is only loaded once
+    (str)emoji: The unicoded emoji
+    (tuple[int, int])size: The size of the mask
+    
+    Returns:
+    (Image): A transparent image with the emoji
+    
+    """
+
+    mask = Image.new("RGBA", (160, 160), color=(255, 255, 255, 0))
+    draw = ImageDraw.Draw(mask)
+    draw.text((0, 0), emoji, font=font, embedded_color=True)
+    mask = mask.resize(size)
+
+    return mask
+
+def getDimensions(draw: ImageDraw, text: str, font: ImageFont) -> tuple[int, int]:
+    """ Gets the size of text using the font
+    
+    Parameters:
+    (ImageDraw): The draw object of the image
+    (str)text: The text you are getting the size of
+    (ImageFont)font: The font being used in drawing the text
+    
+    Returns:
+    (tuple[int, int]): The width and height of the text
+    
+    """
+    left, top, right, bottom = draw.multiline_textbbox((0, 0), text, font=font)
+    return (right-left), (bottom-top)
 
 def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     """ Creates a post with the response to be uploaded to Instagram 
@@ -34,13 +70,11 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     modifiedResponse = "\n".join(["\n".join(textwrap.wrap(subtext, width=70)) for subtext in response.split("\n")]) # Response is separated by newlines so it doesn't run off the screen
     poppinsFont = ImageFont.truetype("./fonts/Poppins-Regular.ttf", 25)
     dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 55)
+    emojiFont = ImageFont.truetype(r"fonts\AppleColorEmoji.ttf", 137)
     DANCINGHEIGHT = 50 # The height of the font is 50px since the text doesn't change
     PADDING = 80 # Padding between the two parts of text
 
-    left, top, right, bottom = draw.multiline_textbbox((0, 0), modifiedResponse, font=poppinsFont)
-
-    # length = right - left
-    poppinsHeight = bottom - top # Height of the response in px
+    _, poppinsHeight = getDimensions(draw, modifiedResponse, poppinsFont)
 
     marginHeight = (1080 - (poppinsHeight + PADDING + DANCINGHEIGHT)) / 2 # [ Total height of image (1080) - PADDING (80) - content height of both pieces of text ] /2
 
@@ -51,15 +85,42 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     draw.text((51, marginHeight), "Make someone smile; Say something kind:", fill=(255, 255, 255), font=dancingScriptFont) # Makes it a little bolder since the bold font is not supported by PIL
     logger.debug("Added dancing script font text")
 
-
     # Now add the response
     draw.text((75, marginHeight+PADDING), modifiedResponse, fill=(255, 255, 255), font=poppinsFont)
     logger.debug("Added the response")
+
+    # Now add any emojis that weren't embedded correctly
+    modifiedResponseL = modifiedResponse.split("\n")
+    for i, line in enumerate(modifiedResponseL):
+        for j, char in enumerate(line):
+            if (not char.isascii()):
+                
+                # Get the height of the text ABOVE the emoji in modifiedResponse
+                aboveText = "\n".join(modifiedResponseL[:i])
+                _, aboveTextHeight = getDimensions(draw, aboveText, poppinsFont)
+
+                # The height that we paste at is aboveTextHeight + (marginHeight+PADDING) + (Some error)
+                # (marginHeight+PADDING) is where we pasted the entire paragraph
+                y = aboveTextHeight + (marginHeight+PADDING) + 5
+
+                # Get the length of the text on the line up to the emoji
+                beforeLength, _ = getDimensions(draw, line[:j], poppinsFont)
+
+                # The x position is beforeLength + 75; 75px is where we pasted the entire paragraph
+                x = (75) + beforeLength
+
+                # Create the mask
+                emojiMask = getEmojiMask(emojiFont, char, (30, 30))
+
+                # Paste the mask onto the image
+                img.paste(emojiMask, (int(x), int(y)), emojiMask)
 
     return img
 
 
 
 if __name__ == "__main__":
-    createPostImage("""A"""*400,
+    createPostImage("""Brady Horn looks so peaceful when he sleeps \U0001f4a4 he's my cute little guy\U0001f970""",
                     "https://images.unsplash.com/photo-1615839377917-bc950e77a6d1?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTI4NTQ0NDd8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop").show()
+    # emojiFont = ImageFont.truetype(r"fonts\AppleColorEmoji.ttf", 137)
+    # getEmojiMask(emojiFont, "\U0001f602", (100, 100)).show()
