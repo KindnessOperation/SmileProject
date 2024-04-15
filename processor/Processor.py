@@ -109,7 +109,7 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
                 # The height that we paste at is aboveTextHeight + (marginHeight+PADDING) + (Some error)
                 # (marginHeight+PADDING) is where we pasted the entire paragraph
-                y = aboveTextHeight + (marginHeight+PADDING) + 5
+                y = aboveTextHeight + (marginHeight+PADDING) + 7
 
                 # Get the length of the text on the line up to the emoji
                 beforeLength, _ = getDimensions(draw, line[:j], poppinsFont)
