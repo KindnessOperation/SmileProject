@@ -8,3 +8,4 @@ __pycache__
 data.csv
 images/out/*
 images/*.png
+createReel.py
