@@ -3,7 +3,6 @@ import requests
 import io
 import textwrap
 import logging
-import re
 
 logger = logging.getLogger("processor")
 logger.setLevel(logging.INFO)
