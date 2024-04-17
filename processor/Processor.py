@@ -69,7 +69,7 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     response = "\n".join(["\n".join(textwrap.wrap(subtext, width=70)) for subtext in response.split("\n")]) # Response is separated by newlines so it doesn't run off the screen
     poppinsFont = ImageFont.truetype("./fonts/Poppins-Regular.ttf", 25)
     dancingScriptFont = ImageFont.truetype("./fonts/DancingScript.ttf", 55)
-    emojiFont = ImageFont.truetype(r"fonts\AppleColorEmoji.ttf", 137)
+    emojiFont = ImageFont.truetype(r"./fonts/AppleColorEmoji.ttf", 137)
     DANCINGHEIGHT = 50 # The height of the font is 50px since the text doesn't change
     PADDING = 80 # Padding between the two parts of text
 
