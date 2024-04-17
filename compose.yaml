@@ -3,7 +3,7 @@ services:
   bot:
     image: python:3
     command: ['python', 'bot.py']
-    working_dir /app
+    working_dir: /app
     build: .
     volumes:
       - ./logs/bot.log:/app/logs/bot.log
