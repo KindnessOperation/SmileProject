@@ -6,7 +6,7 @@ services:
     working_dir: /app
     build: .
     volumes:
-      - ./images/out/*:/app/images/out/*
+      - ./images/out/:/app/images/out/
       - ./logs/bot.log:/app/logs/bot.log
   
   main:
