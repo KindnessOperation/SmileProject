@@ -1,4 +1,4 @@
-# The Kindness Operation
+# Smile Project
 
 
 ## Description
@@ -10,12 +10,14 @@ Smile Project is a project that posts kind messages made by the community on an 
 3. A various selection of background images can be selected for the post (Cycle images by selecting the X)
 4. If approved, the bot will post the image on Instagram
 
-## Installation
-To install the dependencies required for Smile Project use:
-
-```pip install -r requirements.txt```
-
-Create a file called ```token.json``` with an empty json dictionary inside; This is where credentials will be stored.
+## Simple Usage
+```
+git clone https://github.com/TheWalkingSea/TheKindnessOperation.git
+cp example.config.json config.json
+// Modify config.json as necessary
+// Download service_account.json
+docker compose up
+```
 
 ### Setup Google Application
 Setup an application to auth with the bot with [Google Cloud](https://developers.google.com/workspace/guides/get-started). This app is used to authenticate with the Google API with OAUTH2.
