@@ -1,6 +1,7 @@
 from apiclient import discovery
 from httplib2 import Http
 from oauth2client import client, file, tools
+import googleapiclient.errors
 from typing import Generator
 import logging
 
@@ -43,8 +44,11 @@ class Form:
             discoveryServiceUrl=self.DISCOVERY_DOC,
             static_discovery=False,
         )
-
-        result = service.forms().responses().list(formId=self.formId).execute()
+        try:
+            result = service.forms().responses().list(formId=self.formId).execute()
+        except googleapiclient.errors.HttpError:
+            return self.getResponses()
+        
         responses = result['responses']
         for response in responses:
             answerKey = list(response['answers'].keys())[0]
