@@ -4,6 +4,7 @@ from oauth2client import client, file, tools
 import googleapiclient.errors
 from typing import Generator
 import logging
+import time
 
 logger = logging.getLogger("form")
 
@@ -46,7 +47,9 @@ class Form:
         )
         try:
             result = service.forms().responses().list(formId=self.formId).execute()
-        except googleapiclient.errors.HttpError:
+        except googleapiclient.errors.HttpError as error:
+            logger.warning("Error occurred when trying to fetch responses: %s" % error)
+            time.sleep(5)
             return self.getResponses()
         
         responses = result['responses']
