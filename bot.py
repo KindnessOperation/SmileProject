@@ -8,7 +8,7 @@ import aiohttp
 import aiofiles
 import asyncio
 import dataset_writer
-
+import random
 
 CONFIG = None
 with open("./config.json", "r") as f:
@@ -60,7 +60,7 @@ async def sendVerifyMessage(response: str, school: str, originalMsg: discord.Mes
 
 
     unsplash = processor.Unsplash(CONFIG['unsplashAccessToken'])
-    imgURI = unsplash.getRandomImage(query=CONFIG['imageQuery'])
+    imgURI = unsplash.getRandomImage(query=random.choice(CONFIG['imageQuery']))
     img = processor.createPostImage(response, imgURI)
     img.save(bot.VERIFYPATH) # In the future make an io buffer but the code already works so leave it
 
