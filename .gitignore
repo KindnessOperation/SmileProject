@@ -9,3 +9,4 @@ data.csv
 images/out/*
 images/*.png
 createReel.py
+genWallpaper.py
