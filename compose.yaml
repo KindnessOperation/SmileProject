@@ -1,19 +1,16 @@
 
 services:
   bot:
-    image: python:3
     command: ['python', 'bot.py']
-    working_dir: /app
     build: .
     volumes:
       - ./images/out/:/app/images/out/
       - ./logs/bot.log:/app/logs/bot.log
   
   main:
-    image: python:3
     command: ['python', 'main.py']
-    working_dir: /app
     build: .
     volumes:
       - ./logs/main.log:/app/logs/main.log
+      - ./service_account.json:/app/service_account.json
   
