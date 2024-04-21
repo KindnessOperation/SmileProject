@@ -2,7 +2,7 @@
 
 
 ## Description
-The Kindness Operation is a project that posts kind messages made by the community on an Instagram page through an anonymous Google Form. The messages are then placed on a template with a randomized picture of a flower in the background, creating a neatly designed post. This project's goal was to help make the creation of posts autonomous with small intervention to approve posts and responses all integrated through Discord.
+The Kindness Operation is a project that posts kind messages made by the community on an Instagram page through an anonymous Google Form. The messages are then placed on a template with a randomized picture from Unsplash, creating a neatly designed post. This project's goal was to help make the creation of posts autonomous with small intervention to approve posts and responses all integrated through Discord.
 
 ## How it works
 1. Google Form responses are sent in a discord channel
