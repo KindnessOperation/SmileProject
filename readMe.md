@@ -2,7 +2,7 @@
 
 
 ## Description
-Smile Project is a project that posts kind messages made by the community on an Instagram page through an anonymous Google Form. The messages are then placed on a template with a randomized picture of a flower in the background, creating a neatly designed post. This project's goal was to help make the creation of posts autonomous with small intervention to approve posts and responses all integrated through Discord.
+The Kindness Operation is a project that posts kind messages made by the community on an Instagram page through an anonymous Google Form. The messages are then placed on a template with a randomized picture of a flower in the background, creating a neatly designed post. This project's goal was to help make the creation of posts autonomous with small intervention to approve posts and responses all integrated through Discord.
 
 ## How it works
 1. Google Form responses are sent in a discord channel
@@ -18,6 +18,7 @@ cp example.config.json config.json
 // Download service_account.json
 docker compose up
 ```
+Main manages the Google Form and sends responses. Bot manages the response verification, image generation, and posting.
 
 ### Setup Google Application
 Setup an application to auth with the bot with [Google Cloud](https://developers.google.com/workspace/guides/get-started). This app is used to authenticate with the Google API with OAUTH2.
@@ -55,14 +56,6 @@ The bot can manage multiple accounts and forms at once. ```config.json``` contai
         - The value is a dictionary with:
             - FormId from Google Forms
             - Dictionary with credentials for the instagram account
-
-## Usage
-There are two main files: main.py and bot.py. Both must be ran seperately to make the bot work
-```
-python main.py
-python bot.py
-````
-Main manages the Google Form and sends responses. Bot manages the response verification, image generation, and posting.
 
 ## License
 [MIT](https://github.com/TheWalkingSea/SmileProject/blob/main/LICENSE)
