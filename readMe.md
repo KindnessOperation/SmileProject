@@ -18,6 +18,7 @@ cp example.config.json config.json
 // Download service_account.json
 docker compose up
 ```
+Main manages the Google Form and sends responses. Bot manages the response verification, image generation, and posting.
 
 ### Setup Google Application
 Setup an application to auth with the bot with [Google Cloud](https://developers.google.com/workspace/guides/get-started). This app is used to authenticate with the Google API with OAUTH2.
@@ -55,14 +56,6 @@ The bot can manage multiple accounts and forms at once. ```config.json``` contai
         - The value is a dictionary with:
             - FormId from Google Forms
             - Dictionary with credentials for the instagram account
-
-## Usage
-There are two main files: main.py and bot.py. Both must be ran seperately to make the bot work
-```
-python main.py
-python bot.py
-````
-Main manages the Google Form and sends responses. Bot manages the response verification, image generation, and posting.
 
 ## License
 [MIT](https://github.com/TheWalkingSea/SmileProject/blob/main/LICENSE)
