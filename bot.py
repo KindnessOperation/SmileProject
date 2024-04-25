@@ -20,6 +20,10 @@ basic_config = logging.basicConfig(filename="logs/bot.log",
 logger = logging.getLogger("bot")
 logger.setLevel(logging.DEBUG)
 
+console = logging.StreamHandler() # sys.stderr
+console.setLevel(logging.WARNING)
+logging.getLogger().addHandler(console)
+
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 bot.POSTPATH = "./images/post.png"
 bot.VERIFYPATH = "./images/verify.png" # Path to store the processed image

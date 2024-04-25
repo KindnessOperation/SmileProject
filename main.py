@@ -12,6 +12,10 @@ basic_config = logging.basicConfig(filename="logs/main.log",
 logger = logging.getLogger("main")
 logger.setLevel(logging.DEBUG)
 
+console = logging.StreamHandler() # sys.stderr
+console.setLevel(logging.WARNING)
+logging.getLogger().addHandler(console)
+
 CONFIG = None
 with open("./config.json", "r") as f:
     CONFIG = json.load(f)
