@@ -25,7 +25,7 @@ class Form:
         creds = store.get()
         if not creds or creds.invalid:
             logger.warning("2OAuth token invalid - Manual intervention required")
-            flow = client.flow_from_clientsecrets(r"./service_account.json", self.SCOPES)
+            flow = client.flow_from_clientsecrets(r"./client_secrets.json", self.SCOPES)
             creds = tools.run_flow(flow, store)
         return creds
 
@@ -66,3 +66,6 @@ class Form:
         """
         responses = list(self.getResponses())
         return [response[0] for response in responses] # Parse and pick out the responseId and put into a list
+
+if __name__ == "__main__":
+    Form("")._authenticate()

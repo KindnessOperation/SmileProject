@@ -8,7 +8,7 @@ services:
       - ./logs/bot.log:/app/logs/bot.log
   
   main:
-    command: ['python', 'main.py']
+    command: ['python', 'main.py', '--noauth_local_webserver']
     build: .
     volumes:
       - ./logs/main.log:/app/logs/main.log
