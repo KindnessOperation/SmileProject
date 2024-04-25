@@ -12,5 +12,5 @@ services:
     build: .
     volumes:
       - ./logs/main.log:/app/logs/main.log
-      - ./service_account.json:/app/service_account.json
+      - ./client_secrets.json:/app/client_secrets.json
   
