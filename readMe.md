@@ -15,7 +15,7 @@ The Kindness Operation is a project that posts kind messages made by the communi
 git clone https://github.com/TheWalkingSea/TheKindnessOperation.git
 cp example.config.json config.json
 // Modify config.json as necessary
-// Download service_account.json
+// Download client_secrets.json
 docker compose up
 ```
 Main manages the Google Form and sends responses. Bot manages the response verification, image generation, and posting.
@@ -23,7 +23,7 @@ Main manages the Google Form and sends responses. Bot manages the response verif
 ### Setup Google Application
 Setup an application to auth with the bot with [Google Cloud](https://developers.google.com/workspace/guides/get-started). This app is used to authenticate with the Google API with OAUTH2.
 - Enable the [Forms API](https://console.cloud.google.com/flows/enableapi?apiid=forms.googleapis.com)
-- Add a service account to the app and download as ```service_account.json```
+- Add a service account to the app and download as ```client_secrets.json```
 - Add the account with the Google Forms into the testing user list
 
 ### Google Form
