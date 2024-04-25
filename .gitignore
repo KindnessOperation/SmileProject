@@ -1,5 +1,5 @@
 config.json
-service_account.json
+client_secrets.json
 venv
 token.json
 *.pyc
