@@ -17,7 +17,7 @@ console.setLevel(logging.WARNING)
 logging.getLogger().addHandler(console)
 
 CONFIG = None
-with open("./config.json", "r") as f:
+with open("./config/config.json", "r") as f:
     CONFIG = json.load(f)
 
 
