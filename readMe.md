@@ -12,7 +12,7 @@ The Kindness Operation is a project that posts kind messages made by the communi
 
 ## Simple Usage
 ```
-git clone https://github.com/TheWalkingSea/TheKindnessOperation.git
+git clone https://github.com/KindnessOperation/TheKindnessOperation.git
 cp config/example.config.json config/config.json
 // Modify config.json as necessary
 // Download client_secrets.json to config/client_secrets.json
@@ -70,4 +70,4 @@ The bot can manage multiple accounts and forms at once. ```config.json``` contai
             - Dictionary with credentials for the instagram account
 
 ## License
-[MIT](https://github.com/TheWalkingSea/SmileProject/blob/main/LICENSE)
+[MIT](https://github.com/KindnessOperation/TheKindnessOperation/blob/main/LICENSE)
