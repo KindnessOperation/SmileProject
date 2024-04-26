@@ -11,7 +11,7 @@ import dataset_writer
 import random
 
 CONFIG = None
-with open("./config.json", "r") as f:
+with open("./config/config.json", "r") as f:
     CONFIG = json.load(f)
 
 basic_config = logging.basicConfig(filename="logs/bot.log", 
@@ -114,7 +114,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
             return
         else: return
 
-        dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, True, school)
+        dataset_writer.CSVWriter("./logs/data.csv").writeData(timestamp, response, True, school)
 
         logger.info("Reaction minimum met - Moving to verified step: %s" % (response))
         await reaction.message.delete()
@@ -164,7 +164,7 @@ async def verify(ctx: commands.Context) -> None:
     school = embed.author.name
     timestamp = embed.timestamp
 
-    dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, True, school)
+    dataset_writer.CSVWriter("./logs/data.csv").writeData(timestamp, response, True, school)
 
 
     logger.info("Manually verified message @ %s - %s" % (school, response))

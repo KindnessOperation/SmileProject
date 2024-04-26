@@ -5,6 +5,8 @@ import googleapiclient.errors
 from typing import Generator
 import logging
 import time
+import sys
+
 
 logger = logging.getLogger("form")
 
@@ -21,12 +23,14 @@ class Form:
         (client.OAuth2Credentials): 2Oath Credential object
         
         """
-        store = file.Storage("./token.json")
+        store = file.Storage("./config/token.json")
         creds = store.get()
         if not creds or creds.invalid:
             logger.warning("2OAuth token invalid - Manual intervention required")
-            flow = client.flow_from_clientsecrets(r"./client_secrets.json", self.SCOPES)
+            flow = client.flow_from_clientsecrets(r"./config/client_secrets.json", self.SCOPES)
             creds = tools.run_flow(flow, store)
+            logger.info("OAuth2 Credentials Saved")
+            sys.exit(0)
         return creds
 
     def getResponses(self) -> Generator[tuple[str, str], None, None]:
