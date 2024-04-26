@@ -4,13 +4,14 @@ services:
     command: ['python', 'bot.py']
     build: .
     volumes:
-      - ./images/out/:/app/images/out/
-      - ./logs/bot.log:/app/logs/bot.log
+      - ./images/out:/app/images/out
+      - ./config:/app/config
+      - ./logs:/app/logs
   
   main:
     command: ['python', 'main.py', '--noauth_local_webserver']
     build: .
     volumes:
-      - ./logs/main.log:/app/logs/main.log
-      - ./client_secrets.json:/app/client_secrets.json
+      - ./config:/app/config
+      - ./logs:/app/logs
   
