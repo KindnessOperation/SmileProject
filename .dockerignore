@@ -1,4 +1,14 @@
 venv
-*.pyc
+
+config/*
+images/*
+logs/*
+
 __pycache__
+*.pyc
+
+
+
 createReel.py
+genWallpaper.py
+
