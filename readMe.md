@@ -23,17 +23,12 @@ Main manages the Google Form and sends responses. Bot manages the response verif
 ### Setup Google Application
 Setup a project to allow 2OAuth Flow with the bot using [Google Cloud Console](https://console.cloud.google.com/).
 1. Create a project
-2. Open the project and navigate to [Credentials](https://console.cloud.google.com/apis/credentials) and create an OAuth client ID
+2. Open the project and setup [OAuth Consent Screen](https://console.cloud.google.com/apis/credentials/consent)
 3. Add gmail account with Google Form to the app (Can be the same email as the owner of the app)
 4. Change the app to production to prevent refresh token from expiring ([invalid_grant](https://developers.google.com/google-ads/api/docs/get-started/common-errors))
-5. Enable the [Forms API](https://console.cloud.google.com/flows/enableapi?apiid=forms.googleapis.com)
-
-### Google Form
-Setup a Google Form with one question. Note: Question must be text-based, typically a long answer box.
-- **IMPORTANT**: The first question is where the response is extracted. All other questions are ignored
-- Record the Google Form ID in ```config.json```
-- Account with Google Form must be authorized as a test user in the OAuth2 Application
-    - When first running the program, you must authorize the app to have access to the forms. Note: This is only needed once and login is cached afterwards in ```token.json```
+5. Navigate to [Credentials](https://console.cloud.google.com/apis/credentials) and create an OAuth client ID - Desktop App
+6. Download JSON for client secrets to ```config/client_secrets.json```
+7. Enable the [Forms API](https://console.cloud.google.com/flows/enableapi?apiid=forms.googleapis.com)
 
 ### Authorizing with OAuth2
 In order for the bot to connect to the Google Form you must setup the Google Application. If setup, add the user with the google form as a test user and run:
@@ -42,8 +37,14 @@ python main.py
 ```
 You will be prompted to authorize your account with the bot
 - Make sure to login to the account containing the Google Form.
-- Credentials will be logged to config/token.json
+- Credentials will be logged to ```config/token.json```
 
+### Google Form
+Setup a Google Form with one question. Note: Question must be text-based, typically a long answer box.
+- **IMPORTANT**: The first question is where the response is extracted. All other questions are ignored
+- Record the Google Form ID in ```config.json```
+- Account with Google Form must be authorized as a test user in the OAuth2 Application
+    - When first running the program, you must authorize the app to have access to the forms. Note: This is only needed once and login is cached afterwards in ```token.json```
 
 ## Configuration
 The bot can manage multiple accounts and forms at once. ```config.json``` contains the configuration files required to run the program.
