@@ -64,7 +64,9 @@ async def sendVerifyMessage(response: str, school: str, originalMsg: discord.Mes
 
 
     unsplash = processor.Unsplash(CONFIG['unsplashAccessToken'])
-    imgURI = unsplash.getRandomImage(query=random.choice(CONFIG['imageQuery']))
+    choice = str(random.choice(CONFIG['imageQuery']))
+    logger.info("Randomly selected image query: \"%s\"")
+    imgURI = unsplash.getRandomImage(query=choice)
     img = processor.createPostImage(response, imgURI)
     img.save(bot.VERIFYPATH) # In the future make an io buffer but the code already works so leave it
 
