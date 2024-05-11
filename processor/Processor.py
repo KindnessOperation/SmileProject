@@ -90,6 +90,10 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
     # Now add any emojis that weren't embedded correctly
     responseL = response.split("\n")
+    for i in range(len(responseL)):
+        if (not responseL[i]):
+            responseL[i] = "." # If it is a newline, just put a dot on the line to fix bug with emojis being on wrong line with multiple newlines
+            
     for i, line in enumerate(responseL):
         for j, char in enumerate(line):
             if (not char.isascii()):
@@ -127,7 +131,7 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
 
 
 if __name__ == "__main__":
-    createPostImage("""Sebbyyy Matoess you are so sweet and thoughtful, I'm so glad that I got to meet you at school. You give me a good start to my day at school and always cheer me up when I'm down, ilyyy \u2764\ufe0f""",
+    createPostImage("""Sebbyyy Matoess you are so sweet and thoughtfu\n\naaal, I'm so glad th\u2764\ufe0f\u2764\ufe0f at I got to meet you at school. You give me a good start to my day at school and always cheer me up when I'm down, ilyyy \u2764\ufe0f""",
                     "https://images.unsplash.com/photo-1615839377917-bc950e77a6d1?ixid=M3w1ODU1ODV8MHwxfHJhbmRvbXx8fHx8fHx8fDE3MTI4NTQ0NDd8&ixlib=rb-4.0.3?w=1080&h=1080&fit=crop").show()
     # emojiFont = ImageFont.truetype(r"fonts\AppleColorEmoji.ttf", 137)
     # getEmojiMask(emojiFont, "\U0001f602", (100, 100)).show()
