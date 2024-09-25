@@ -25,12 +25,16 @@ class Form:
         """
         store = file.Storage("./config/token.json")
         creds = store.get()
-        if not creds or creds.invalid:
-            logger.warning("2OAuth token invalid - Manual intervention required")
+        if not creds:
+            logger.warning("2OAuth token not found - Manual intervention required")
             flow = client.flow_from_clientsecrets(r"./config/client_secrets.json", self.SCOPES)
             creds = tools.run_flow(flow, store)
             logger.info("OAuth2 Credentials Saved")
             sys.exit(0)
+        if creds.invalid:
+            logger.warning("Token invalid: Refreshing with client_secrets.json")
+            time.sleep(60) # Sleep for 60 seconds to not trip any ratelimit errors
+            return self._authenticate()
         return creds
 
     def getResponses(self) -> Generator[tuple[str, str], None, None]:
