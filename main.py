@@ -29,10 +29,26 @@ class SmileProject:
         self.school = school
         self.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/1224211649288867870/IMG_9125.jpg?ex=661caaf1&is=660a35f1&hm=d1e2fa5fff66b33b0327bb81e1b973134f3a9935f2bd60776433484c72b5a51d&"
 
+    def send_error_webhook(self, exception: Exception) -> None:
+
+        embed = discord.Embed(title="⚠️ Exception Occurred  Retrieving Responses", color=discord.Color.red())
+        embed.add_field(name="Type", value=f"`{type(exception)}`", inline=False)
+        embed.add_field(name="Message", value=f"`{exception}`", inline=False)
+        embed.add_field(name="Traceback", value=f"```{exception.__traceback__[-1000:]}```", inline=False)  # Truncate to avoid Discord limit
+
+        self.webhook.send(embed=embed, username="Smile Project", avatar_url=self.FLOWERURI)
+
+        logging.error(exception)
+
 
     def loop(self) -> None:
         form = Form(self.formId)
-        responses = form.getResponses()
+        try:
+            responses = form.getResponses()
+        except Exception as e:
+            self.send_error_webhook(e)
+            raise e
+        
         for response_pk, response in responses:
             if (response_pk not in self.responses): # New response!
                 logger.info("New Response @ %s - %s - %s" % (self.school, response_pk, response))

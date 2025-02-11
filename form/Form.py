@@ -58,7 +58,9 @@ class Form:
         except googleapiclient.errors.HttpError as error:
             logger.warning("Error occurred when trying to fetch responses: %s" % error)
             time.sleep(5)
-            return self.getResponses()
+            ret = self.getResponses()
+            logger.info("Responses successfully retrieved...")
+            return ret
         
         responses = result['responses']
         for response in responses:
