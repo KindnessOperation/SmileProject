@@ -9,6 +9,7 @@ import aiofiles
 import asyncio
 import dataset_writer
 import random
+import traceback
 
 CONFIG = None
 with open("./config/config.json", "r") as f:
@@ -33,8 +34,8 @@ bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/12242
 async def on_ready() -> None:
     logger.info(f"{bot.user.name} is ready!")
     print(f"{bot.user.name} is ready!")
-    bot.verifyChannel = bot.get_channel(CONFIG['channels']['verify'])
-    bot.successChannel = bot.get_channel(CONFIG['channels']['success'])
+    bot.verifyChannels = {school: bot.get_channel(school['channels']['verify']) for school in CONFIG['accounts']}
+    bot.successChannels = {school: bot.get_channel(school['channels']['success']) for school in CONFIG['accounts']}
     
 
 @bot.event
@@ -86,7 +87,7 @@ async def sendVerifyMessage(response: str, school: str, originalMsg: discord.Mes
     )
 
     if (not originalMsg): # Send new message
-        msg = await bot.verifyChannel.send(file=file, embed=embed)
+        msg = await bot.verifyChannels[school].send(file=file, embed=embed)
         await msg.add_reaction("\u2705") # Check
         await msg.add_reaction("\u274C") # X
     else: # Edit old message
@@ -107,7 +108,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     timestamp = embed.timestamp
 
     # If the message has 2 other reactions; The response is sent to the verify channel
-    if (channelId == CONFIG['channels']['responses']): # Responses Channel
+    if (channelId == CONFIG['accounts']['school']['channels']['responses']): # Responses Channel
 
         if (reaction.emoji == "\u2705" and reaction.count == 2): pass
         elif (reaction.emoji == "\u274C" and reaction.count == 2): # X
@@ -123,7 +124,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         await sendVerifyMessage(response, school)
     
     # After the message has been approved by responses, we move on to approve the background image in #verify
-    elif (channelId == CONFIG['channels']['verify']): # Verify Channel
+    elif (channelId == CONFIG['accounts']['school']['channels']['verify']): # Verify Channel
         if (reaction.emoji == "\u2705"): # If it's a check, upload
             logger.info("Uploading response to Instagram: %s" % response)
 
@@ -145,7 +146,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
             # Post in success
             await reaction.message.delete()
-            await bot.successChannel.send(file=discord.File(fp=bot.POSTPATH, filename="post.png"))
+            await bot.successChannels[school].send(file=discord.File(fp=bot.POSTPATH, filename="post.png"))
         
         elif (reaction.emoji == "\u274C"): # If it's an X, reroll
             logger.info("Rerolling post - %s" % response)
@@ -189,6 +190,27 @@ async def getImages(ctx: commands.Context, limit: int=None) -> None:
             print(message.content)
     await msg.edit(embed=discord.Embed(title="Images saved...", color=discord.Color.green()))
 
-
+@bot.event
+async def on_error(event, *args, **kwargs):
+    # Get the error channel
+    error_channel = bot.get_channel(1341972130060963901)
+    
+    # Build the error message with traceback
+    error_message = "".join(traceback.format_exception(*args))
+    
+    # Create the embed
+    embed = discord.Embed(
+        title="Error Report",
+        description=f"An error occurred in the event: **{event}**",
+        color=discord.Color.red()
+    )
+    
+    embed.add_field(name="Error Message", value=f"```{error_message}```", inline=False)
+    
+    embed.set_footer(text=f"Occurred at {discord.utils.format_dt(discord.utils.utcnow(), style='R')}")
+    
+    # Send the error message in an embed to the designated channel
+    if error_channel:
+        await error_channel.send(embed=embed)
 
 bot.run(CONFIG['discordToken'])
