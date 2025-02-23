@@ -145,7 +145,11 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
 
             # Post in success
-            await reaction.message.delete()
+            try:
+                await reaction.message.delete()
+            except:
+                logging.warning(f"Reaction message deleted... Most likely due to a timing error where the check mark was clicked twice; Reaction: {reaction.emoji}; Reaction Count: {reaction.count}")
+                return
             await bot.successChannels[school].send(file=discord.File(fp=bot.POSTPATH, filename="post.png"))
         
         elif (reaction.emoji == "\u274C"): # If it's an X, reroll
