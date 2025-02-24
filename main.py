@@ -80,7 +80,7 @@ if __name__ == "__main__":
     for school, data in CONFIG['accounts'].items():
         sp = SmileProject(
             data['formId'], 
-            CONFIG['webhook'], # Global
+            data['webhook'], 
             school
         )
         thread = threading.Thread(None, sp.startLoop, daemon=True)

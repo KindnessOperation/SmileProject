@@ -108,7 +108,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
     timestamp = embed.timestamp
 
     # If the message has 2 other reactions; The response is sent to the verify channel
-    if (channelId == CONFIG['accounts']['school']['channels']['responses']): # Responses Channel
+    if (channelId == CONFIG['accounts'][school]['channels']['responses']): # Responses Channel
 
         if (reaction.emoji == "\u2705" and reaction.count == 2): pass
         elif (reaction.emoji == "\u274C" and reaction.count == 2): # X
@@ -124,7 +124,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         await sendVerifyMessage(response, school)
     
     # After the message has been approved by responses, we move on to approve the background image in #verify
-    elif (channelId == CONFIG['accounts']['school']['channels']['verify']): # Verify Channel
+    elif (channelId == CONFIG['accounts'][school]['channels']['verify']): # Verify Channel
         if (reaction.emoji == "\u2705"): # If it's a check, upload
             logger.info("Uploading response to Instagram: %s" % response)
 
