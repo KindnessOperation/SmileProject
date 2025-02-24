@@ -34,8 +34,8 @@ bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/12242
 async def on_ready() -> None:
     logger.info(f"{bot.user.name} is ready!")
     print(f"{bot.user.name} is ready!")
-    bot.verifyChannels = {school: bot.get_channel(school['channels']['verify']) for school in CONFIG['accounts']}
-    bot.successChannels = {school: bot.get_channel(school['channels']['success']) for school in CONFIG['accounts']}
+    bot.verifyChannels = {school: bot.get_channel(CONFIG['accounts'][school]['channels']['verify']) for school in CONFIG['accounts']}
+    bot.successChannels = {school: bot.get_channel(CONFIG['accounts'][school]['channels']['success']) for school in CONFIG['accounts']}
     
 
 @bot.event
