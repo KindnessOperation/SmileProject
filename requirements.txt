@@ -35,3 +35,4 @@ requests-oauthlib==2.0.0
 rsa==4.9
 six==1.16.0
 threadpoolctl==3.4.0
+audioop-lts
