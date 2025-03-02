@@ -10,6 +10,7 @@ import asyncio
 import dataset_writer
 import random
 import traceback
+import sys
 
 CONFIG = None
 with open("./config/config.json", "r") as f:
@@ -199,13 +200,17 @@ async def on_error(event, *args, **kwargs):
     # Get the error channel
     error_channel = bot.get_channel(1341972130060963901)
     
-    # Build the error message with traceback
-    error_message = "".join(traceback.format_exception(*args))
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+
+    if exc_value:
+        error_message = "".join(traceback.format_exception(exc_type, exc_value, exc_traceback))
+    else:
+        error_message = event
     
     # Create the embed
     embed = discord.Embed(
         title="Error Report",
-        description=f"An error occurred in the event: **{event}**",
+        description=f"⚠️ An error occurred in the event: **{event}**",
         color=discord.Color.red()
     )
     
