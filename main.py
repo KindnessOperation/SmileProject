@@ -70,7 +70,7 @@ class SmileProject:
     def startLoop(self) -> None:
         while True:
             self.loop()
-            time.sleep(5)
+            time.sleep(20)
 
 
 
