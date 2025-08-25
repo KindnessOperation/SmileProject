@@ -42,8 +42,8 @@ class SmileProject:
 
 
     def loop(self) -> None:
-        form = Form(self.formId)
         try:
+            form = Form(self.formId)
             responses = form.getResponses()
         except Exception as e:
             self.send_error_webhook(e)
