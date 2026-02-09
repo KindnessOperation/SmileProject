@@ -26,8 +26,11 @@ class Unsplash:
             "query": query
         }
         # Call to API to get a random image with the query
-        response = requests.get("https://api.unsplash.com/photos/random", params=params)
+        response = requests.get("https://api.unsplash.com/photos/random", params=params, timeout=15)
+        response.raise_for_status()
         js = response.json()
+        if not js or not isinstance(js, list):
+            raise ValueError("Unsplash API returned unexpected response: %s" % js)
         return js[0]['urls']['raw'] + "?w=1080&h=1080&fit=crop" # Parameters to make it fit in an Instagram post
 
 

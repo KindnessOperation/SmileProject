@@ -18,24 +18,29 @@ class Form:
 
     def _authenticate(self) -> client.OAuth2Credentials:
         """ Authenticates with the Google Cloud API with 2auth
-        
+
         Returns:
         (client.OAuth2Credentials): 2Oath Credential object
-        
+
         """
         store = file.Storage("./config/token.json")
-        creds = store.get()
-        if not creds:
-            logger.warning("2OAuth token not found - Manual intervention required")
-            flow = client.flow_from_clientsecrets(r"./config/client_secrets.json", self.SCOPES)
-            creds = tools.run_flow(flow, store)
-            logger.info("OAuth2 Credentials Saved")
-            sys.exit(0)
-        if creds.invalid:
-            logger.warning("Token invalid: Refreshing with client_secrets.json")
-            time.sleep(60) # Sleep for 60 seconds to not trip any ratelimit errors
-            return self._authenticate()
-        return creds
+        MAX_RETRIES = 3
+        for attempt in range(MAX_RETRIES + 1):
+            creds = store.get()
+            if not creds:
+                logger.warning("2OAuth token not found - Manual intervention required")
+                flow = client.flow_from_clientsecrets(r"./config/client_secrets.json", self.SCOPES)
+                creds = tools.run_flow(flow, store)
+                logger.info("OAuth2 Credentials Saved")
+                sys.exit(0)
+            if creds.invalid:
+                if attempt >= MAX_RETRIES:
+                    raise RuntimeError("OAuth credentials remain invalid after %d retries" % MAX_RETRIES)
+                logger.warning("Token invalid (attempt %d/%d): Refreshing with client_secrets.json", attempt + 1, MAX_RETRIES)
+                time.sleep(60)
+                continue
+            return creds
+        raise RuntimeError("Failed to authenticate after all retries")
 
     def getResponses(self) -> Generator[tuple[str, str], None, None]:
         """ Gets all form results as strings 
@@ -53,16 +58,19 @@ class Form:
             discoveryServiceUrl=self.DISCOVERY_DOC,
             static_discovery=False,
         )
-        try:
-            result = service.forms().responses().list(formId=self.formId).execute()
-        except googleapiclient.errors.HttpError as error:
-            logger.warning("Error occurred when trying to fetch responses: %s" % error)
-            time.sleep(5)
-            ret = self.getResponses()
-            logger.info("Responses successfully retrieved...")
-            return ret
-        
-        responses = result['responses']
+        MAX_RETRIES = 3
+        result = None
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                result = service.forms().responses().list(formId=self.formId).execute()
+                break
+            except googleapiclient.errors.HttpError as error:
+                if attempt >= MAX_RETRIES:
+                    raise
+                logger.warning("HTTP error fetching responses (attempt %d/%d): %s", attempt + 1, MAX_RETRIES, error)
+                time.sleep(5 * (attempt + 1))
+
+        responses = result.get('responses', [])
         for response in responses:
             answerKey = list(response['answers'].keys())[0]
             yield (response['responseId'], response['answers'][answerKey]['textAnswers']['answers'][0]['value'])

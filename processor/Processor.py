@@ -55,7 +55,8 @@ def createPostImage(response: str, backgroundURI: str) -> Image.Image:
     """
     logger.info("Creating post image")
 
-    resp = requests.get(backgroundURI) # Get the image
+    resp = requests.get(backgroundURI, timeout=30) # Get the image
+    resp.raise_for_status()
     img = Image.open(io.BytesIO((resp.content)))
     logger.debug("Set background image")
 

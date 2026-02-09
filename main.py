@@ -5,6 +5,8 @@ import discord
 import logging
 import threading
 import datetime
+import traceback
+import random
 
 basic_config = logging.basicConfig(filename="logs/main.log", 
     format="%(name)s-%(asctime)s-%(levelname)s:%(message)s", 
@@ -34,7 +36,8 @@ class SmileProject:
         embed = discord.Embed(title="⚠️ Exception Occurred  Retrieving Responses", color=discord.Color.red())
         embed.add_field(name="Type", value=f"`{type(exception)}`", inline=False)
         embed.add_field(name="Message", value=f"`{exception}`", inline=False)
-        embed.add_field(name="Traceback", value=f"```{exception.__traceback__[-1000:]}```", inline=False)  # Truncate to avoid Discord limit
+        tb_text = "".join(traceback.format_tb(exception.__traceback__))
+        embed.add_field(name="Traceback", value=f"```{tb_text[-1000:]}```", inline=False)  # Truncate to avoid Discord limit
 
         self.webhook.send(embed=embed, username="Smile Project", avatar_url=self.FLOWERURI)
 
@@ -47,7 +50,7 @@ class SmileProject:
             responses = form.getResponses()
         except Exception as e:
             self.send_error_webhook(e)
-            raise e
+            return
         
         for response_pk, response in responses:
             if (response_pk not in self.responses): # New response!
@@ -68,9 +71,23 @@ class SmileProject:
                 logger.info("Webhook sent")
     
     def startLoop(self) -> None:
+        consecutive_failures = 0
+        MAX_BACKOFF = 300  # 5 minutes cap
         while True:
-            self.loop()
-            time.sleep(20)
+            try:
+                self.loop()
+                consecutive_failures = 0
+                time.sleep(20)
+            except Exception as e:
+                consecutive_failures += 1
+                backoff = min(MAX_BACKOFF, (2 ** consecutive_failures))
+                jitter = random.uniform(0, backoff * 0.5)
+                sleep_time = backoff + jitter
+                logger.error(
+                    "Thread %s crashed (attempt %d), retrying in %.1fs: %s",
+                    self.school, consecutive_failures, sleep_time, e
+                )
+                time.sleep(sleep_time)
 
 
 

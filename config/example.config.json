@@ -1,16 +1,17 @@
 {
     "unsplashAccessToken": "",
     "discordToken": "",
-    "webhook": "https://discord.com/api/webhooks/9999999999999/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "channels": {
-        "responses": 99999999999999999999,
-        "verify": 99999999999999999999,
-        "success": 99999999999999999999
-    },
+    "errorChannel": 99999999999999999999,
     "imageQuery": ["lorem", "ipsum"],
     "accounts": {
         "School1": {
             "formId": "",
+            "webhook": "https://discord.com/api/webhooks/9999999999999/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "channels": {
+                "responses": 99999999999999999999,
+                "verify": 99999999999999999999,
+                "success": 99999999999999999999
+            },
             "instagram": {
                 "username": "",
                 "password": ""
@@ -18,6 +19,12 @@
         },
         "School2": {
             "formId": "",
+            "webhook": "https://discord.com/api/webhooks/9999999999999/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+            "channels": {
+                "responses": 99999999999999999999,
+                "verify": 99999999999999999999,
+                "success": 99999999999999999999
+            },
             "instagram": {
                 "username": "",
                 "password": ""

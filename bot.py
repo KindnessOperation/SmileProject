@@ -11,6 +11,8 @@ import dataset_writer
 import random
 import traceback
 import sys
+import uuid
+import os
 
 CONFIG = None
 with open("./config/config.json", "r") as f:
@@ -27,9 +29,7 @@ console.setLevel(logging.WARNING)
 logging.getLogger().addHandler(console)
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
-bot.POSTPATH = "./images/post.png"
-bot.VERIFYPATH = "./images/verify.png" # Path to store the processed image
-bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/1224211649288867870/IMG_9125.jpg?ex=661caaf1&is=660a35f1&hm=d1e2fa5fff66b33b0327bb81e1b973134f3a9935f2bd60776433484c72b5a51d&"
+bot.FLOWERURI = "https://cdn.discordapp.com/attachments/891493636611641345/1224211649288867870/IMG_9125.jpg?ex=661caaf1&is=660a35f1&hm=d1e2fa5fff66b33b0327bb81e1b973134f3a9935f2bd60776433484c72b5a51d&" # TODO: replace with permanent URL (Discord CDN links expire)
 
 @bot.event
 async def on_ready() -> None:
@@ -65,19 +65,26 @@ async def sendVerifyMessage(response: str, school: str, originalMsg: discord.Mes
                     await originalMsg.remove_reaction(reaction, user) # Remove their reaction
 
 
-    unsplash = processor.Unsplash(CONFIG['unsplashAccessToken'])
-    choice = str(random.choice(CONFIG['imageQuery']))
-    logger.info("Randomly selected image query: \"%s\"")
-    imgURI = unsplash.getRandomImage(query=choice)
-    img = processor.createPostImage(response, imgURI)
-    img.save(bot.VERIFYPATH) # In the future make an io buffer but the code already works so leave it
+    verify_path = f"./images/verify_{uuid.uuid4().hex}.png"
+    try:
+        unsplash = processor.Unsplash(CONFIG['unsplashAccessToken'])
+        choice = str(random.choice(CONFIG['imageQuery']))
+        logger.info("Randomly selected image query: \"%s\"", choice)
+        imgURI = unsplash.getRandomImage(query=choice)
+        img = processor.createPostImage(response, imgURI)
+        img.save(verify_path)
+    except Exception as e:
+        logger.error("Failed to generate post image: %s", e)
+        error_embed = discord.Embed(title="Image Generation Failed", description=str(e), color=discord.Color.red())
+        await bot.verifyChannels[school].send(embed=error_embed)
+        return
 
     # Send in verified channel to make sure that the generated image is appropriate
-    embed = discord.Embed(color=discord.Color.green(), 
-        title="Upload Post?", 
+    embed = discord.Embed(color=discord.Color.green(),
+        title="Upload Post?",
         description=response
         )
-    file = discord.File(fp=bot.VERIFYPATH, filename="verify.png")
+    file = discord.File(fp=verify_path, filename="verify.png")
     embed.set_image(url="attachment://verify.png")
     embed.set_author(
         name=school
@@ -87,12 +94,18 @@ async def sendVerifyMessage(response: str, school: str, originalMsg: discord.Mes
         icon_url=bot.FLOWERURI
     )
 
-    if (not originalMsg): # Send new message
-        msg = await bot.verifyChannels[school].send(file=file, embed=embed)
-        await msg.add_reaction("\u2705") # Check
-        await msg.add_reaction("\u274C") # X
-    else: # Edit old message
-        await originalMsg.edit(attachments=[file], embed=embed)
+    try:
+        if (not originalMsg): # Send new message
+            msg = await bot.verifyChannels[school].send(file=file, embed=embed)
+            await msg.add_reaction("\u2705") # Check
+            await msg.add_reaction("\u274C") # X
+        else: # Edit old message
+            await originalMsg.edit(attachments=[file], embed=embed)
+    finally:
+        try:
+            os.remove(verify_path)
+        except OSError:
+            pass
 
 @bot.event
 async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> None:
@@ -113,7 +126,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
 
         if (reaction.emoji == "\u2705" and reaction.count == 2): pass
         elif (reaction.emoji == "\u274C" and reaction.count == 2): # X
-            dataset_writer.CSVWriter("./data.csv").writeData(timestamp, response, False, school)
+            dataset_writer.CSVWriter("./logs/data.csv").writeData(timestamp, response, False, school)
             await reaction.message.delete()
             return
         else: return
@@ -129,29 +142,37 @@ async def on_reaction_add(reaction: discord.Reaction, user: discord.Member) -> N
         if (reaction.emoji == "\u2705"): # If it's a check, upload
             logger.info("Uploading response to Instagram: %s" % response)
 
+            post_path = f"./images/post_{uuid.uuid4().hex}.png"
 
-            # Save the image from the embed to bot.POSTPATH
+            # Save the image from the embed to a unique path
             # Quality isn't downgraded that much and makes the code a lot more simpler
             imageURI = reaction.message.embeds[0].image.url
             async with aiohttp.ClientSession() as sess:
                 async with sess.get(imageURI) as req:
-                    async with aiofiles.open(bot.POSTPATH, "wb") as f:
+                    async with aiofiles.open(post_path, "wb") as f:
                         async for data, _ in req.content.iter_chunks():
                             await f.write(data)
 
             # Upload to instagram
             ig = getInstagram(school, CONFIG['accounts']) # While this code is blocking, its only on the initialization of the account and shouldn't have much effect on the performance long-term
-            loop = asyncio.get_event_loop()
-            loop.run_in_executor(None, ig.uploadPost, bot.POSTPATH)
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, ig.uploadPost, post_path)
 
 
             # Post in success
             try:
                 await reaction.message.delete()
-            except:
+            except Exception:
                 logging.warning(f"Reaction message deleted... Most likely due to a timing error where the check mark was clicked twice; Reaction: {reaction.emoji}; Reaction Count: {reaction.count}")
                 return
-            await bot.successChannels[school].send(file=discord.File(fp=bot.POSTPATH, filename="post.png"))
+
+            try:
+                await bot.successChannels[school].send(file=discord.File(fp=post_path, filename="post.png"))
+            finally:
+                try:
+                    os.remove(post_path)
+                except OSError:
+                    pass
         
         elif (reaction.emoji == "\u274C"): # If it's an X, reroll
             logger.info("Rerolling post - %s" % response)
@@ -198,7 +219,7 @@ async def getImages(ctx: commands.Context, limit: int=None) -> None:
 @bot.event
 async def on_error(event, *args, **kwargs):
     # Get the error channel
-    error_channel = bot.get_channel(1341972130060963901)
+    error_channel = bot.get_channel(CONFIG.get('errorChannel', 1341972130060963901))
     
     exc_type, exc_value, exc_traceback = sys.exc_info()
 

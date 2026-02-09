@@ -3,15 +3,16 @@ services:
   bot:
     command: ['python', 'bot.py']
     build: .
+    restart: unless-stopped
     volumes:
       - ./images/out:/app/images/out
       - ./config:/app/config
       - ./logs:/app/logs
-  
+
   main:
     command: ['python', 'main.py', '--noauth_local_webserver']
     build: .
+    restart: unless-stopped
     volumes:
       - ./config:/app/config
       - ./logs:/app/logs
-  
